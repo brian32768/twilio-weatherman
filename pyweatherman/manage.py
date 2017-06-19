@@ -3,8 +3,7 @@
 #     python manage.py runserver
 #
 from app import app
-from flask_script import Manager, Server
-
+from flask_script import Manager
 manager = Manager(app)
 
 @manager.command
@@ -13,9 +12,5 @@ def test():
     pass
 
 if __name__ == '__main__':
-
-    # override localhost
-    server = Server(host="0.0.0.0", port=5000)
     manager.add_command("runserver",server)
-
     manager.run()
