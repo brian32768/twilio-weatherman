@@ -3,8 +3,9 @@
 #
 import requests
 import json
+import os
 
-GOOGLE_API_KEY = 'AIzaSyB_92AooxM-aXprjHRQzvqrYU1_wSDhBx4'
+google_api_key = os.environ["GOOGLE_API_KEY"]
 
 class geocode(object):
 
@@ -17,7 +18,7 @@ class geocode(object):
         return
 
     def fetch(self, zip):
-        uri = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&components=postal_code:%s" % (GOOGLE_API_KEY,zip)
+        uri = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&components=postal_code:%s" % (google_api_key,zip)
         #print(uri)
         response = None
         try:
@@ -35,10 +36,10 @@ class geocode(object):
         return (location["lat"],location["lng"])
         
 if __name__ == "__main__":
-    n = geocode()
-    # comment next line to test parsing only
-    n.fetch("94931")
-    t = n.parse()
-    print(t)
+    g = geocode()
+    # comment out next line to skip google lookup
+    g.fetch("94931")
+    latlon = g.parse()
+    print(latlon)
 
 # That's all!
