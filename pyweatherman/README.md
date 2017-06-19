@@ -1,8 +1,33 @@
 # Receive updates on the weather via a phone.
 Everyone wants to talk about the weather, even phone bots.
 
+## What this is
+
 This is a Twilio app written in Python and Flask that will respond to
 sms and voice requests with information on weather conditions.
+
+Currently the weather report is just the forecast for the immediate future.
+The source is the NOAA National Weather Service.
+
+## What it does
+
+### Responds to SMS messages and phone calls.
+
+If you send a 5 digit zip code in an SMS, it will look that up and
+then send a weather report back for that area.
+
+If you send anything else in the SMS body, or leave it empty,
+it will use your phone number as your location.
+
+### Response to voice calls
+
+You call the number and it says the weather report.
+
+In this case it always uses caller id to determine location. If you
+have a mobile phone number from Butte, Montana then that's the report you
+will get, no matter where you are.
+
+## How to make it work
 
 This project is written and tested with Python 3, but it might work with Python 2.7 as well.
 
@@ -22,28 +47,30 @@ Now you need to do a little prep work before you can run the app.
   source venv/bin/activate
   pip install -r requirements.txt
   ```
-  
-## 2. Set up environment variables
+## 2. Set up Google API key
 
-I don't want my credentials stored in github so I put them into these environment variables:
+The geocoder in app/geocode.py uses Google's service to convert your
+zip code into a location in (lat,lon) format.  That means you have to
+set up a Google API key and put it into your environment. You can get
+a (free) key here:
+https://developers.google.com/maps/documentation/geocoding/get-api-key
 
-I keep these in a shell script outside of this github project.
+The key is good for up to 2500 geocode operations a day.  I don't
+include my key here because I don't want you to use up my geocodes.
 
-## Run
+You must set GOOGLE_API_KEY before you run manage.py or you will get a runtime error.
 
-If you are not still running in the virtual environment from the first step, 
-source venv/bin/activate
+## Make the services accessible to Twilio
 
-  ```bash
-   python manage.py runserver
-  ```
+There are three URLs handled by this app, "/messaging/", "/voice/", and "/status/".
+They all accept POST data from Twilio.
 
-You have to go to twilio.com and set up a phone number to point at this service.
+For testing there is one more you can hit from a browser directly, "/home/".
 
-Currently I expose my development server on all IP addresses (see run.py), but it's behind a firewall.
-You could limit it to localhost and hide it behind a proxy or ngrok.
-
-To allow access from Twilio I put the following into my nginx server:
+The flask script runs on localhost (port 127.0.0.1) so you have to
+allow Twilio to access it. For testing running the flask service is
+fine, so I add this to my nginx server. You could use ngrok as an
+alternative if you don't have a web server.
 
  # Act as a proxy for a flask instance, this is not for production!
  # In real life you want to use uWSGI to run flask apps.
@@ -52,31 +79,38 @@ To allow access from Twilio I put the following into my nginx server:
      }
 
 This will accept URLs such as https://bellman.wildsong.biz/twilio/status/
-and send them to http://127.0.0.1:5000/status
+and send them to http://127.0.0.1:5000/status/
 
-# Sample POST from Twilio, after passing through nginx proxy.
+## Set up a phone number
 
- 'NumSegments':'1'
- 'From':'+15413687383'
- 'FromCountry':'US'
- 'Body':'send me a forecast'
- 'MessageSid':'SMeba3e3587744372d61acb477f8dfa4bf'
- 'FromZip':'97333'
- 'FromState':'OR'
- 'AccountSid':'ACa2b8661e01408dd8160ee8a26a00d448'
- 'AddOns':'{"status":"successful","message":null,"code":null,"results":{}}'
- 'SmsStatus':'received'
- 'ToCountry':'US'
- 'FromCity':'CORVALLIS'
- 'SmsMessageSid':'SMeba3e3587744372d61acb477f8dfa4bf'
- 'ToState':'CA'
- 'ApiVersion':'2010-04-01'
- 'ToZip':'95472'
- 'NumMedia':'0'
- 'SmsSid':'SMeba3e3587744372d61acb477f8dfa4bf'
- 'To':'+17078279200'
- 'ToCity':'SEBASTOPOL'
+Buy a phone number from Twilio and then point it this service.  You
+have to put the URL that is accessible from Twilio into the slots for
+SMS and Voice.  You can also put one in for call status updates, but
+that is not necessary.
 
+The URLs will depend on how you set up a proxy in the previous step.
+They have to be accessible from Twilio, so the 127.0.0.1 version won't
+work.
+
+## Run the service
+
+If you are not still running in the virtual environment from the first step, 
+source venv/bin/activate
+
+  ```bash
+   python manage.py runserver
+  ```
+
+If your browser is running on the same machine as the service you should be able to hit
+http://127.0.0.1:5000/home/ and see a results page.
+
+If you have properly set up a proxy, then you should be able to hit it through the proxy now too.
+For me this means https://bellman.wildsong.biz/twilio/home/
+
+# Test results for various add-ons
+
+I experimented a bit with Twilio caller id add-ons and did not find any benefits for this app.
+I only tested with SMS, maybe they work better with voice calls.
 
 If you turn on the add-on "IceHook Systems Scout" you will see
 something like this for my Google Voice Corvallis number, Lane county
