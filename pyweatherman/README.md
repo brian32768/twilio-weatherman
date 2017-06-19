@@ -1,5 +1,4 @@
 # Receive updates on the weather via a phone.
-Everyone wants to talk about the weather, even phone bots.
 
 ## What this is
 
@@ -60,7 +59,7 @@ include my key here because I don't want you to use up my geocodes.
 
 You must set GOOGLE_API_KEY before you run manage.py or you will get a runtime error.
 
-## Make the services accessible to Twilio
+## 3. Make the services accessible to Twilio
 
 There are three URLs handled by this app, "/messaging/", "/voice/", and "/status/".
 They all accept POST data from Twilio.
@@ -72,16 +71,18 @@ allow Twilio to access it. For testing running the flask service is
 fine, so I add this to my nginx server. You could use ngrok as an
 alternative if you don't have a web server.
 
- # Act as a proxy for a flask instance, this is not for production!
- # In real life you want to use uWSGI to run flask apps.
+  bash```
+  # Act as a proxy for a flask instance, this is not for production!
+  # In real life you want to use uWSGI to run flask apps.
      location /twilio/ {
             proxy_pass http://127.0.0.1:5000/;
      }
-
+  ```
+  
 This will accept URLs such as https://bellman.wildsong.biz/twilio/status/
 and send them to http://127.0.0.1:5000/status/
 
-## Set up a phone number
+## 4. Set up a phone number
 
 Buy a phone number from Twilio and then point it this service.  You
 have to put the URL that is accessible from Twilio into the slots for
@@ -92,7 +93,7 @@ The URLs will depend on how you set up a proxy in the previous step.
 They have to be accessible from Twilio, so the 127.0.0.1 version won't
 work.
 
-## Run the service
+## 5. Run the service
 
 If you are not still running in the virtual environment from the first step, 
 source venv/bin/activate
