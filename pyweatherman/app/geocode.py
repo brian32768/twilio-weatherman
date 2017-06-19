@@ -15,7 +15,8 @@ class geocode(object):
     def __init__(self):
         self.updated = ''
         self.detailedResponse = ''
-        return
+        self.locality = ''
+        self.latlon = None
 
     def fetch(self, zip):
         uri = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&components=postal_code:%s" % (google_api_key,zip)
@@ -26,20 +27,29 @@ class geocode(object):
             self.json = json.loads(r.text)
         except Exception as e:
             pass
-        return
+        return True
 
     def parse(self):
         """Parse json from Google and return a (lat,lon) tuple """
-        geometry = ((self.json["results"])[0])["geometry"]
+        #print(json.dumps(self.json,indent=4))
+        results = (self.json["results"])[0]
+        address_components = results["address_components"]
+        self.locality = None
+        for c in address_components:
+            if "locality" in c["types"]:
+                self.locality = c["short_name"]
+                break
+        geometry = results["geometry"]
         location = geometry["location"]
         #print(location)
-        return (location["lat"],location["lng"])
+        self.latlon = location["lat"],location["lng"]
+        return True
         
 if __name__ == "__main__":
     g = geocode()
     # comment out next line to skip google lookup
-    g.fetch("94931")
-    latlon = g.parse()
-    print(latlon)
+    #g.fetch("94931")
+    g.parse()
+    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
 
 # That's all!

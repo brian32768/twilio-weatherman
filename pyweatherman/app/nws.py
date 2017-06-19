@@ -15,15 +15,16 @@ class nws(object):
     def fetch(self,latlon):
         r = requests.get(uri % latlon)
         self.json = json.loads(r.text)
-        return
+        return True
 
     def parse(self):
         properties = self.json["properties"]
         periods = properties["periods"]
         current = periods[0]
+
         self.updated = properties["updated"]
         self.detailedForecast = current["detailedForecast"]
-        return
+        return True
 
 if __name__ == "__main__":
     n = nws()
