@@ -9,9 +9,6 @@ from datetime import timedelta
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-#SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/users.sqlite3'
-#DATABASE_CONNECT_OPTIONS = {}
-
 # How many cores do we have?
 # Assume one thread for web requests and one for background tasks
 THREADS_PER_PAGE = 2

@@ -1,28 +1,21 @@
 #
-#  python manage.py cleardb
-#  python manage.py initdb
-
-from flask.ext.script import Manager
-
-from login import app
-from login.model import init_db, clear_db
+#   To start the service:
+#     python manage.py runserver
+#
+from app import app
+from flask_script import Manager, Server
 
 manager = Manager(app)
 
-
 @manager.command
-def initdb():
-    """Initialize database."""
-    with app.app_context():
-        init_db()
-
-
-@manager.command
-def cleardb():
-    """Clear database."""
-    with app.app_context():
-        clear_db()
-
+def test():
+    """Run unit tests."""
+    pass
 
 if __name__ == '__main__':
+
+    # override localhost
+    server = Server(host="0.0.0.0", port=5000)
+    manager.add_command("runserver",server)
+
     manager.run()
