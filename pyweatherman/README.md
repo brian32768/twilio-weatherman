@@ -41,11 +41,12 @@ Now you need to do a little prep work before you can run the app.
 
 ## 1. Set up a virtual environment for Python and install dependencies
 
-```bash
+  ```bash
   virtualenv venv
   source venv/bin/activate
   pip install -r requirements.txt
   ```
+  
 ## 2. Set up Google API key
 
 The geocoder in app/geocode.py uses Google's service to convert your
@@ -71,12 +72,12 @@ allow Twilio to access it. For testing running the flask service is
 fine, so I add this to my nginx server. You could use ngrok as an
 alternative if you don't have a web server.
 
-  bash```
-  # Act as a proxy for a flask instance, this is not for production!
-  # In real life you want to use uWSGI to run flask apps.
-     location /twilio/ {
+  ```bash
+  # This will make nginx act as a proxy for a flask instance, this is not
+  # for production! In real life you want to use uWSGI to run flask apps.
+  location /twilio/ {
             proxy_pass http://127.0.0.1:5000/;
-     }
+  }
   ```
   
 This will accept URLs such as https://bellman.wildsong.biz/twilio/status/
