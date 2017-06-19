@@ -6,7 +6,7 @@ from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
 from app.helpers import twiml
 from app import app
-from . import nws
+from app import nws
 
 @app.route('/home/')
 def home():
@@ -14,49 +14,87 @@ def home():
     return render_template('home.html')
 
 # curl http://127.0.0.1:5000/messaging --data-urlencode "to=+17078279200" --data-urlencode "from=+17078270003" --data-urlencode "body=The weather outside is lovely!"
-    
-@app.route('/messaging/', methods=['POST'])
-def messaging():
-    print("We received an SMS message. Send a reply")
-    response = MessagingResponse()
 
-    # Get location from the response, geocode?
-
-    # Cotati
-    lat = 38.352
-    lon = -122.692
-
-    # Sanity check on the location goes here
-
-    # Get the forecast from NWS
+def get_forecast(lat,lon):
+    """ Get the forecast from NWS """
     forecast = ""
     try:
-        nws = nws(lat,lon) 
-        forecast = nws.detailedForecast
+        n = nws.nws(lat,lon)
+        n.parse()
+        forecast = n.detailedForecast
     except Exception as e:
         forecast = "Forecast not available, " + e
 
+    print('msg=',forecast)
+    return forecast
+
+@app.route('/messaging/', methods=['POST'])
+def messaging():
+    print("We received an SMS message. Sending a reply")
+    response = MessagingResponse()
+
+    # Development, dump out the POST so we can see what add-ons are doing
+    for k in request.form:
+        print("'%s':'%s'" % (k,request.form[k]))
+
+    # Get location from the response, geocode? callerid?
+
+    # Sanity check on the location goes here
+    lat = 38.352
+    lon = -122.692
+    forecast = get_forecast(lat,lon)
+
     try:
         rval = response.message(forecast,
-            to    = request.form['From'], from_ = request.form['To']) # Replying so remember to flip From and To!
-        print('msg=',rval)
+                                to   = request.form['From'],
+                                from_ = request.form['To'] # Replying so remember to flip From and To!
+                                )
     except Exception as e:
-        print("Exception building response to sms:", e)
-        for k in request.form:
-           print("  '%s':'%s'" % (k,request.form[k]))
+        print("Exception building response:", e)
+
     return twiml(response)
 
 @app.route('/voice/', methods=['POST'])
 def voice():
     print("We received a voice call. Say something")
     response = VoiceResponse()
-#    response.message(say="Sunny. High near 99, with temperatures falling to around 95 in the afternoon. West southwest wind 9 to 14 mph, with gusts as high as 18 mph.")
+
+    # Development, dump out the POST so we can see what add-ons are doing
+    for k in request.form:
+        print("'%s':'%s'" % (k,request.form[k]))
+
+    try:
+        city = "Forecast for " + request.form["CallerCity"] + '. '
+    except KeyError:
+        city = "Forecast: "
+    
+    try:
+        zip = request.form["CallerZip"]
+    except KeyError:
+        zip = ''
+    print("Caller zip = ", zip)
+    
+    # Sanity check on the location goes here
+    lat = 38.352
+    lon = -122.692
+    forecast = get_forecast(lat,lon)
+
+    try:
+        rval = response.say(city + forecast)
+    except Exception as e:
+        print("Exception building response:", e)
     return twiml(response)
 
 @app.route('/status/', methods=['POST'])
 def status_update():
-    print("We received a status update indicating call progress or some such thing.")
     response = None
+
+    # Development, dump out the POST so we can see what add-ons are doing
+    print("------------------- STATUS ------------------ ")
+    for k in request.form:
+        print("'%s':'%s'" % (k,request.form[k]))
+    print("------------------- ------ ------------------ ")
+
     return twiml(response)
 
 # That's all!
