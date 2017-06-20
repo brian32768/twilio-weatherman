@@ -9,12 +9,10 @@ from app import app
 from app import nws
 from app import geocode
 
-@app.route('/home/')
+@app.route('/weather/home/')
 def home():
     print("Accessing home page, which really does nothing at all.")
     return render_template('home.html')
-
-# curl http://127.0.0.1:5000/messaging --data-urlencode "to=+17078279200" --data-urlencode "from=+17078270003" --data-urlencode "body=The weather outside is lovely!"
 
 def get_forecast(latlon):
     """ Get the forecast from NWS """
@@ -29,7 +27,7 @@ def get_forecast(latlon):
 
     return forecast
 
-@app.route('/messaging/', methods=['POST'])
+@app.route('/weather/messaging/', methods=['POST'])
 def messaging():
     print("------------ SMS MESSAGE RECEIVED ---------- ")
     
@@ -96,7 +94,7 @@ def messaging():
 
     return twiml(response)
 
-@app.route('/voice/', methods=['POST'])
+@app.route('/weather/voice/', methods=['POST'])
 def voice():
     print("------------ VOICE CALL RECEIVED ---------- ")
     response = VoiceResponse()
@@ -143,7 +141,7 @@ def voice():
         
     return twiml(response)
 
-@app.route('/status/', methods=['POST'])
+@app.route('/weather/status/', methods=['POST'])
 def status_update():
     print("--------------- STATUS : %s -------------- " % request.form["CallStatus"])
     # Development, dump out the POST so we can see what add-ons are doing

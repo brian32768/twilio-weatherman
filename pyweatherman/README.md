@@ -109,6 +109,12 @@ http://127.0.0.1:5000/home/ and see a results page.
 If you have properly set up a proxy, then you should be able to hit it through the proxy now too.
 For me this means https://bellman.wildsong.biz/twilio/home/
 
+# Testing
+
+Simulate sending the request that Twilio sends to your server. Use something like this:
+
+ curl http://127.0.0.1:5000/weather/messaging --data-urlencode "to=+17078279200" --data-urlencode "from=+17078270003" --data-urlencode "body=94931" 
+
 # Test results for various add-ons
 
 I experimented a bit with Twilio caller id add-ons and did not find any benefits for this app.
