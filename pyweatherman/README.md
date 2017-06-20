@@ -113,7 +113,13 @@ For me this means https://bellman.wildsong.biz/twilio/home/
 
 Simulate sending the request that Twilio sends to your server. Use something like this:
 
- curl http://127.0.0.1:5000/weather/messaging --data-urlencode "to=+17078279200" --data-urlencode "from=+17078270003" --data-urlencode "body=94931" 
+ curl "https://bellman.wildsong.biz/weather/messaging/" \
+   --data-urlencode "To=+17078279200" \
+   --data-urlencode "From=+17078270003" --data-urlencode "FromZip=97333" --data-urlencode "FromCity=CORVALLIS" \
+   --data-urlencode "Body=94931" 
+
+ curl "https://bellman.wildsong.biz/weather/voice/" \
+   --data-urlencode "CallerCity=DUBLIN" --data-urlencode "CallerZip=94928" 
 
 # Test results for various add-ons
 

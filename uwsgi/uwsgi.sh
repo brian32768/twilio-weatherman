@@ -1,19 +1,17 @@
 #!/bin/bash
 #
-#  Run this at boot time
+#  Run this at boot time, this is for deployment
 #
-apphome=/var/lib/twilio-weatherman
-uwsgihome=$home/uwsgi
+apphome=/var/www/twilio-weatherman
 
-. $apphome/pyweatherman/venv/bin/activate
+# I need to load my secret API key
 . /home/bwilson/environ.sh
 
 if [ ! -e /run/uwsgi/ ]; then
     mkdir -p /run/uwsgi/
 fi
 
-uwsgi \
-    --vhost=true \
+$apphome/pyweatherman/venv/bin/uwsgi \
     --master --pidfile=/run/uwsgi/master.pid \
     --socket=127.0.0.1:29000 \
     --processes=5 \
@@ -21,7 +19,7 @@ uwsgi \
     --harakiri=20 \
     --max-requests=5000 \
     --vacuum \
-    --init $apphome/pyweatherman.ini \
-
-    #--daemonize=/var/log/uwsgi/uwsgi.log
+    --daemonize=/var/log/uwsgi/uwsgi.log \
+    --chdir=$apphome/pyweatherman \
+    --ini pyweatherman.ini
 
