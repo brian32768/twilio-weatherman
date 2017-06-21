@@ -1,9 +1,5 @@
 Add alerts to the voice message
 
-Logging -
-Turn down debugging
-Log phone numbers
-
 Probably don't need the voice status thing at all, remove it.
 
 
