@@ -4,28 +4,14 @@
 from flask import render_template, request
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
-from app.helpers import twiml
+from app.helpers import twiml,get_weather
 from app import app
-from app import nws
 from app import geocode
 
 @app.route('/home/')
 def home():
     print("Accessing home page, which really does nothing at all.")
     return render_template('home.html')
-
-def get_forecast(latlon):
-    """ Get the forecast from NWS """
-    forecast = ""
-    try:
-        n = nws.nws()
-        n.fetch(latlon)
-        n.parse()
-        forecast = n.detailedForecast
-    except Exception as e:
-        forecast = "not available, " + e
-
-    return forecast
 
 @app.route('/messaging/', methods=['POST'])
 def messaging():
@@ -64,7 +50,7 @@ def messaging():
             print("City is not available.")
 
     if not zip:
-        forecast = "Could not determine location, sorry. Forecast not available."
+        msg = "Could not determine location, sorry. Weather information not available."
 
     else:
         place = geocode.geocode()
@@ -75,19 +61,16 @@ def messaging():
             locality = place.locality
     
         # Sanity check on the location goes here
-        preamble = "Forecast: "
         if locality:
             print("You are near %s." % locality)
-            preamble = "Forecast for %s: " % locality
         print('Geocoded location for %s is %s' % (zip,latlon))
 
-        #latlon = (38.352, -122.692) # Cotati
-        forecast = preamble + get_forecast(latlon)
+        (shortmsg, longmsg) = get_weather(latlon,locality)
 
-    print("Replying: '%s'" % forecast)
+    print("Replying: '%s'" % shortmsg)
     try:
         # We're replying so remember to flip From and To!
-        rval = response.message(forecast, to = request.form['From'], from_ = request.form['To'])
+        rval = response.message(shortmsg, to = request.form['From'], from_ = request.form['To'])
         # rval contains XML that will be sent
     except Exception as e:
         print("Exception sending reply:", e)
@@ -103,10 +86,11 @@ def voice():
     # This is especially useful for testing add-ons.
     #for k in request.form: print("'%s':'%s'" % (k,request.form[k]))
 
+    locality = ""
     try:
-        city = "Forecast for " + request.form["CallerCity"] + ': '
+        locality = request.form["CallerCity"]
     except KeyError:
-        city = "Forecast: "
+        pass
     
     try:
         zip = request.form["CallerZip"]
@@ -119,7 +103,7 @@ def voice():
     # something while lookups takes place.
 
     if not zip:
-        forecast = "Could not determine location, sorry. Forecast not available."
+        msg = "Could not determine location, sorry. Forecast not available."
     else:
         place = geocode.geocode()
         place.fetch(zip)
@@ -129,12 +113,11 @@ def voice():
         # Sanity check on the location goes here
         print("Geocoded location for %s is %s." % (zip,latlon))
 
-        #latlon = (38.352, -122.692) # Cotati
-        forecast = city + get_forecast(latlon)
+        (shortmsg,longmsg) = get_weather(latlon,locality)
     
-    print("Saying '%s'" % forecast)
+    print("Saying '%s'" % longmsg)
     try:
-        rval = response.say(forecast)
+        rval = response.say(longmsg)
         # rval contains XML that will be sent
     except Exception as e:
         print("Exception in response :", e)
