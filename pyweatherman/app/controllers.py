@@ -5,9 +5,9 @@ from __future import print_function
 from flask import render_template, request
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
-from app.helpers import twiml,get_weather
 from app import app
-from app import geocode
+from utils.helpers import twiml,get_weather
+from utils import geocode
 
 @app.route('/home/')
 def home():
