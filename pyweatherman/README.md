@@ -5,12 +5,12 @@
 This is a Twilio app written in Python and Flask that will respond to
 sms and voice requests with information on weather conditions.
 
-Currently the weather report is just the forecast for the immediate future.
-The source is the NOAA National Weather Service.
+As of right now (Jun 21 2017) it's running on +1 707-827-9200.
 
 ## What it does
 
-is more important than current conditions.
+Returns a weather report. The source is currently the NOAA National
+Weather Service.
 
 ### Responds to SMS messages and phone calls.
 
@@ -22,14 +22,15 @@ it empty, it will try to use caller id to get your location. If you
 send a bogus 5 digit number such as 00000 or caller id is blocked,
 then geocode will fail and you get a message to that effect.
 
-The formatting of messages is slightly different for SMS vs voice; if
-the full weather message is too long then it will try sending you only
-the forecast portion.  Sometimes weather service forecasts are wordier
-and I figured the forecast was more important than current conditions.
+The formatting of messages is slightly different for SMS versus voice;
+if the full weather message is too long then it will try sending you
+only the forecast portion.  Sometimes weather service forecasts are
+wordier and I figured the forecast was more important than current
+conditions.
 
 ### Response to voice calls
 
-You call the number and it says the weather report.
+Call the number and the bot will read the weather report to you.
 
 In this case it always uses caller id to determine location. If you
 have a mobile phone number from Butte, Montana then that's the report
@@ -38,7 +39,7 @@ will fail and say a message to that effect.
 
 ## How to make it work
 
-This project is written and tested with Python 3, but it might work with Python 2.7 as well.
+This project is written and tested with Python 3, but it should work with Python 2.7 as well.
 
 To pull a copy of the code from github,
 
@@ -120,6 +121,8 @@ If you have properly set up a proxy, then you should be able to hit it through t
 For me this means https://bellman.wildsong.biz/twilio/home/
 
 # Testing
+
+I will be setting up Travis so that the code will see some automated testing.
 
 Simulate sending the request that Twilio sends to your server. Use something like this:
 
