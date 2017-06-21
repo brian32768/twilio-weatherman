@@ -27,10 +27,15 @@ I use Google to geocode zip codes into lat,lon
 The NWS takes the lat,lon from the geocoder and turns it into weather information.
 
 Yes, the NWS has an API.
-
-Test it with curl
-   ```bash
-   curl "https://api.weather.gov/points/38.332,-122.692/forecast"
-   ```
-
 Learn more about it at https://forecast-v3.weather.gov/documentation
+
+### Test NWS with curl
+
+Some examples of curl to test NWS responses
+
+  ```bash
+  curl -H "Accept: application/vnd.noaa.dwml+xml;version=1" "https://api.weather.gov/points/38.332,-122.692"
+  curl "https://api.weather.gov/points/38.332,-122.692/forecast"
+  ```
+
+

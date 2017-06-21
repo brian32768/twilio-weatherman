@@ -1,4 +1,3 @@
-Add current conditions
 Add alerts to the voice message
 
 Consider the use of alternative weather services
@@ -13,5 +12,7 @@ Make error handling more robust- in particular, reject latlon that NWS cannot pr
 Changing to a different weather service might alleviate this problem.
 
 Don't really need the voice status thing at all, remove it. (I turned it off at Twilio)
+
+
 
 

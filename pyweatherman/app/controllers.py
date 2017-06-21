@@ -1,6 +1,7 @@
 #
 #  Here are the routes (that is, the URL's) that this app supports.
 #
+from __future import print_function
 from flask import render_template, request
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
@@ -10,29 +11,29 @@ from app import geocode
 
 @app.route('/home/')
 def home():
-    print("Accessing home page, which really does nothing at all.")
+    """ This is just here for testing the service is up. """
     return render_template('home.html')
 
 @app.route('/messaging/', methods=['POST'])
 def messaging():
-    print("------------ SMS MESSAGE RECEIVED ---------- ")
-    
-    response = MessagingResponse()
+    sender = request.form['From']
+    print("------ SMS MESSAGE RECEIVED FROM %s ------ " % sender)
 
     # For development, dump out the POST so we can see what is sent to us.
     # This is especially useful for testing add-ons.
     #for k in request.form: print("'%s':'%s'" % (k,request.form[k]))
 
+    response = MessagingResponse()
+    
     # Sending a ZIP as the message overrides caller id zip.
     locality = None
     zip = None
     body = None
     try:
         body = request.form["Body"].strip()
-        print("TXT='%s'" % body)
-
         if len(body)==5 and body.isdigit():
             zip = body
+        print("Body='%s'" % body)
     except Exception as e:
         print("Could not read body.", e)
 
@@ -40,14 +41,13 @@ def messaging():
         # No zip in message body so try caller id zip and locality
         try:
             zip = request.form["FromZip"]
-            print("Caller zip = ", zip)
         except KeyError:
-            print("Zip is not available.")
+            pass
         try:
             locality = request.form["FromCity"]
         except KeyError:
             locality = None
-            print("City is not available.")
+            pass
 
     if not zip:
         msg = "Could not determine location, sorry. Weather information not available."
@@ -72,21 +72,23 @@ def messaging():
     print("Replying: '%s'" % shortmsg)
     try:
         # We're replying so remember to flip From and To!
-        rval = response.message(shortmsg, to = request.form['From'], from_ = request.form['To'])
+        rval = response.message(shortmsg, to = sender, from_ = request.form['To'])
         # rval contains XML that will be sent
     except Exception as e:
-        print("Exception sending reply:", e)
+        print("Exception buiding reply:", e)
 
     return twiml(response)
 
 @app.route('/voice/', methods=['POST'])
 def voice():
-    print("------------ VOICE CALL RECEIVED ---------- ")
-    response = VoiceResponse()
-
     # For development, dump out the POST so we can see what is sent to us.
     # This is especially useful for testing add-ons.
     #for k in request.form: print("'%s':'%s'" % (k,request.form[k]))
+
+    sender = request.form['From']
+    print("----- VOICE CALL RECEIVED FROM %s ----- " % sender)
+
+    response = VoiceResponse()
 
     locality = ""
     try:
@@ -99,7 +101,6 @@ def voice():
         zip = request.form["CallerZip"]
     except KeyError:
         pass
-    print("Caller zip = ", zip)
 
     have_callerid = True
     try:
@@ -112,6 +113,7 @@ def voice():
     # In a more perfect world, geocode and weather lookups would be
     # done asynchronously so that the caller can listen to MOH or
     # something while lookups takes place.
+    # In testing so far though, nearly all the work is done by the second ring.
 
     if not zip:
         for k in request.form: print("'%s':'%s'" % (k,request.form[k]))
@@ -142,7 +144,7 @@ def voice():
         rval = response.say(longmsg)
         # rval contains XML that will be sent
     except Exception as e:
-        print("Exception in response :", e)
+        print("Exception building reply :", e)
         
     return twiml(response)
 
