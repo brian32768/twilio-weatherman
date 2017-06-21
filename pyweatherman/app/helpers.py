@@ -7,8 +7,9 @@ def twiml(resp):
     return resp
 
 def get_weather(latlon,locality):
-    """ Get the weather conditions and forecast,
-    Returns a tuple with a short format message and long messge. short will be only the forecast if long>160 """
+    """ Get the weather conditions and forecast.
+    Returns a tuple with a short format message and long messge. 
+    The short message will contain only the forecast if the long message > 160 """
 
     n = nws.nws(latlon)
 

@@ -10,21 +10,31 @@ The source is the NOAA National Weather Service.
 
 ## What it does
 
+is more important than current conditions.
+
 ### Responds to SMS messages and phone calls.
 
 If you send a 5 digit zip code in an SMS, it will look that up and
 then send a weather report back for that area.
 
-If you send anything else in the SMS body, or leave it empty,
-it will use your phone number as your location.
+If you send anything other than a zip code in the SMS body, or leave
+it empty, it will try to use caller id to get your location. If you
+send a bogus 5 digit number such as 00000 or caller id is blocked,
+then geocode will fail and you get a message to that effect.
+
+The formatting of messages is slightly different for SMS vs voice; if
+the full weather message is too long then it will try sending you only
+the forecast portion.  Sometimes weather service forecasts are wordier
+and I figured the forecast was more important than current conditions.
 
 ### Response to voice calls
 
 You call the number and it says the weather report.
 
 In this case it always uses caller id to determine location. If you
-have a mobile phone number from Butte, Montana then that's the report you
-will get, no matter where you are.
+have a mobile phone number from Butte, Montana then that's the report
+you will get, no matter where you are. If you block caller id, then it
+will fail and say a message to that effect.
 
 ## How to make it work
 

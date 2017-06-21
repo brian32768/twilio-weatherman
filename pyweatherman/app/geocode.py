@@ -26,13 +26,19 @@ class geocode(object):
             r = requests.get(uri)
             self.json = json.loads(r.text)
         except Exception as e:
-            pass
+            print("geocode.fetch(%s) failed with" % zip,e)
+            return False
         return True
 
     def parse(self):
         """Parse json from Google and return a (lat,lon) tuple """
         #print(json.dumps(self.json,indent=4))
-        results = (self.json["results"])[0]
+        try:
+            results = (self.json["results"])[0]
+        except Exception as e:
+            print("geocode.parse() failed with",e)
+            return False
+        
         address_components = results["address_components"]
         self.locality = None
         for c in address_components:
@@ -41,6 +47,7 @@ class geocode(object):
                 break
         geometry = results["geometry"]
         location = geometry["location"]
+        
         #print(location)
         self.latlon = location["lat"],location["lng"]
         return True
