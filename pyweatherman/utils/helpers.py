@@ -11,7 +11,7 @@ def get_weather(latlon,locality):
     Returns a tuple with a short format message and long messge. 
     The short message will contain only the forecast if the long message > 160 """
 
-    n = nws.nws(latlon)
+    n = nws(latlon)
 
     short_msg = long_msg = ''
 

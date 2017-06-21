@@ -51,12 +51,5 @@ class geocode(object):
         #print(location)
         self.latlon = location["lat"],location["lng"]
         return True
-        
-if __name__ == "__main__":
-    g = geocode()
-    # comment out next line to skip google lookup
-    #g.fetch("94931")
-    g.parse()
-    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
 
 # That's all!
