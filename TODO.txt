@@ -1,9 +1,17 @@
+Add current conditions
 Add alerts to the voice message
 
-Logging -
-Turn down debugging
-Log phone numbers
+Consider the use of alternative weather services
+like OpenWeatherMap to Weather Underground. Some of them
+have geocoding built in.
 
-Probably don't need the voice status thing at all, remove it.
+Consider other geocoders
+
+Geocode anything in SMS, not just zip codes. That is, accept things like "Cotati CA".
+
+Make error handling more robust- in particular, reject latlon that NWS cannot process.
+Changing to a different weather service might alleviate this problem.
+
+Don't really need the voice status thing at all, remove it. (I turned it off at Twilio)
 
 
