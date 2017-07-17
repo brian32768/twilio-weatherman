@@ -1,7 +1,7 @@
 #
 #  Here are the routes (that is, the URL's) that this app supports.
 #
-from __future import print_function
+from __future__ import print_function
 from flask import render_template, request
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
@@ -9,10 +9,10 @@ from app import app
 from utils.helpers import twiml,get_weather
 from utils import geocode
 
-@app.route('/home/')
+@app.route('/weather/')
 def home():
-    """ This is just here for testing the service is up. """
-    return render_template('home.html')
+    """ Send the weather info back via browser. """
+    return render_template('weather.html')
 
 @app.route('/messaging/', methods=['POST'])
 def messaging():
@@ -25,20 +25,26 @@ def messaging():
 
     response = MessagingResponse()
     
-    # Sending a ZIP as the message overrides caller id zip.
+    # Does the message body have something in it?
     locality = None
     zip = None
     body = None
     try:
         body = request.form["Body"].strip()
         if len(body)==5 and body.isdigit():
+            # Could this number be a zipcode?
             zip = body
+
+        elif len(body) > 1:
+            # Maybe it's a locality instead?
+            locality = body
+            
         print("Body='%s'" % body)
     except Exception as e:
         print("Could not read body.", e)
 
-    if not zip:
-        # No zip in message body so try caller id zip and locality
+    if not zip and not locality:
+        # try caller id zip and locality
         try:
             zip = request.form["FromZip"]
         except KeyError:
@@ -48,10 +54,10 @@ def messaging():
         except KeyError:
             locality = None
             pass
-
-    if not zip:
+        
+    if not zip and not locality:
+        # With no input, I cannot even guess where you are! Oh!
         msg = "Could not determine location, sorry. Weather information not available."
-
     else:
         place = geocode.geocode()
         place.fetch(zip)
@@ -62,9 +68,11 @@ def messaging():
     
         # Sanity check on the location goes here
         if not latlon or not latlon[0] or not latlon[1]:
-            shortmsg = "Sorry, but geocoding failed."
+            shortmsg = "Sorry, I can't tell where you are!"
             if zip:
                 shortmsg += " I tried zip code '%s'." % zip
+            elif locality:
+                shortmsg += " I looked for '%s'." % locality
         else:
             print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
             (shortmsg, longmsg) = get_weather(latlon,locality)

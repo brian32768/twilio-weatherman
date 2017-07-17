@@ -6,8 +6,6 @@ have geocoding built in.
 
 Consider other geocoders
 
-Geocode anything in SMS, not just zip codes. That is, accept things like "Cotati CA".
-
 Make error handling more robust- in particular, reject latlon that NWS cannot process.
 Changing to a different weather service might alleviate this problem.
 
