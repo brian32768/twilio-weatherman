@@ -124,7 +124,7 @@ def voice():
     # something while lookups takes place.
     # In testing so far though, nearly all the work is done by the second ring.
 
-    if not zip:
+    if not locality and not zip:
         for k in request.form: print("'%s':'%s'" % (k,request.form[k]))
         if have_callerid:
             longmsg = "Sorry, I could not determine your location from caller eye dee. Weather information not available."
@@ -132,7 +132,7 @@ def voice():
             longmsg = "Sorry, but caller eye dee is not available for your number, so I could not determine your location."
     else:
         place = geocode.geocode()
-        place.fetch(zip)
+        place.search(address=locality,postalcode=zip)
         place.parse()
         latlon = place.latlon
         if not locality:
@@ -141,9 +141,11 @@ def voice():
         # Sanity check on the location goes here
         if not latlon or not latlon[0] or not latlon[1]:
             print("Geocode failed for %s" % zip)
-            longmsg = "Sorry, but geocoding failed."
+            longmsg = "Sorry, but I cannot tell where you are."
+            if locality:
+                longmsg += " Your city is %s." % locality
             if zip:
-                 longmsg += " Your zip code is " + ' '.join([x for x in zip])
+                 longmsg += " Your zip code is %." % ' '.join([x for x in zip])
         else:
             print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
             (shortmsg, longmsg) = get_weather(latlon,locality)
