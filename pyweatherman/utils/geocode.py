@@ -18,17 +18,30 @@ class geocode(object):
         self.locality = ''
         self.latlon = None
 
-    def fetch(self, zip):
-        uri = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&components=postal_code:%s" % (google_api_key,zip)
-        #print(uri)
+
+    def search(self, address="", postalcode="", country="US"):
+
+        parameters = {
+            "key" : google_api_key,
+            "components" : "country:%s"%country
+        }
+
+        if postalcode:
+            parameters["components"] = "postal_code:%s" %postalcode
+        if address:
+            parameters["address"] = address
+            
+        uri = "https://maps.googleapis.com/maps/api/geocode/json"
         response = None
         try:
-            r = requests.get(uri)
+            r = requests.get(uri, params=parameters)
+            #print(r.url, r.text)
             self.json = json.loads(r.text)
         except Exception as e:
-            print("geocode.fetch(%s) failed with" % zip,e)
+            print("geocode.search(%s) failed with" % zip,e)
             return False
         return True
+
 
     def parse(self):
         """Parse json from Google and return a (lat,lon) tuple """

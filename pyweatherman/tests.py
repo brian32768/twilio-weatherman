@@ -10,10 +10,22 @@ if __name__ == "__main__":
 
     g = geocode()
     # comment out next line to skip google lookup and use sample json
-    g.fetch("94931")
+    g.search(postalcode="94931")
     g.parse()
     latlon = g.latlon
     print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+
+    g.search(address="Cotati")
+    g.parse()
+    latlon = g.latlon
+    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+
+    g.search(address="Paris")
+    g.parse()
+    latlon = g.latlon
+    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+
+    exit(0)
 
     # utils.helpers
     
