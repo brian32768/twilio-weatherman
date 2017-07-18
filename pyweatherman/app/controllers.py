@@ -64,9 +64,9 @@ def messaging():
         shortmsg = "Sorry, I can't tell where you are!"
         if place.parse():
             latlon = place.latlon  
-            if place.locality:
+            if place.short_place:
                 # This will be a better name than what I typed
-                locality = place.locality
+                locality = place.short_place
     
             if not latlon or not latlon[0] or not latlon[1]:
                 if zip:
@@ -136,8 +136,8 @@ def voice():
         longmsg = "Sorry, but I cannot tell where you are."
         if place.parse():
             latlon = place.latlon
-            if place.locality:
-                locality = place.locality
+            if place.long_place:
+                locality = place.long_place
 
             # Sanity check on the location goes here
             if not latlon or not latlon[0] or not latlon[1]:
