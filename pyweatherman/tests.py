@@ -7,8 +7,15 @@ from utils.geocode import geocode
 if __name__ == "__main__":
 
     # utils.geocode
-
     g = geocode()
+
+    # test caching
+    g.search(postalcode="94931")
+    g.search(postalcode="94931")
+    g.search(postalcode="94931")
+    g.search(postalcode="94931")
+    g.search(postalcode="94931")
+
     # comment out next line to skip google lookup and use sample json
     g.search(postalcode="94931")
     if not g.parse():

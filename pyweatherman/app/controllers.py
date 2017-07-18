@@ -59,25 +59,23 @@ def messaging():
         msg = "Could not determine location, sorry. Weather information not available."
     else:
         place = geocode.geocode()
-
         place.search(address=locality, postalcode=zip)
-        
-        place.parse()
-        latlon = place.latlon  
-        if place.locality:
-            # This will be a better name than what I typed
-            locality = place.locality
+
+        shortmsg = "Sorry, I can't tell where you are!"
+        if place.parse():
+            latlon = place.latlon  
+            if place.locality:
+                # This will be a better name than what I typed
+                locality = place.locality
     
-        # Sanity check on the location goes here
-        if not latlon or not latlon[0] or not latlon[1]:
-            shortmsg = "Sorry, I can't tell where you are!"
-            if zip:
-                shortmsg += " I tried zip code '%s'." % zip
-            elif locality:
-                shortmsg += " I looked for '%s'." % locality
-        else:
-            print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
-            (shortmsg, longmsg) = get_weather(latlon,locality)
+            if not latlon or not latlon[0] or not latlon[1]:
+                if zip:
+                    shortmsg += " I tried zip code '%s'." % zip
+                elif locality:
+                    shortmsg += " I looked for '%s'." % locality
+            else:
+                print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
+                (shortmsg, longmsg) = get_weather(latlon,locality)
 
     print("Replying: '%s'" % shortmsg)
     try:
@@ -134,22 +132,23 @@ def voice():
     else:
         place = geocode.geocode()
         place.search(address=locality,postalcode=zip)
-        place.parse()
-        latlon = place.latlon
-        if place.locality:
-            locality = place.locality
 
-        # Sanity check on the location goes here
-        if not latlon or not latlon[0] or not latlon[1]:
-            print("Geocode failed for %s" % zip)
-            longmsg = "Sorry, but I cannot tell where you are."
-            if locality:
-                longmsg += " Your city is %s." % locality
-            if zip:
-                 longmsg += " Your zip code is %." % ' '.join([x for x in zip])
-        else:
-            print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
-            (shortmsg, longmsg) = get_weather(latlon,locality)
+        longmsg = "Sorry, but I cannot tell where you are."
+        if place.parse():
+            latlon = place.latlon
+            if place.locality:
+                locality = place.locality
+
+            # Sanity check on the location goes here
+            if not latlon or not latlon[0] or not latlon[1]:
+                print("Geocode failed for %s" % zip)
+                if locality:
+                    longmsg += " Your city is %s." % locality
+                if zip:
+                    longmsg += " Your zip code is %." % ' '.join([x for x in zip])
+            else:
+                print("Geocode result for %s %s = %s." % (place.locality,zip,latlon))
+                (shortmsg, longmsg) = get_weather(latlon,locality)
     
     print("Saying '%s'" % longmsg)
     try:
