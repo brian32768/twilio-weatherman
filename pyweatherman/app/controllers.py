@@ -136,7 +136,7 @@ def voice():
         place.search(address=locality,postalcode=zip)
         place.parse()
         latlon = place.latlon
-        if not locality:
+        if place.locality:
             locality = place.locality
 
         # Sanity check on the location goes here
