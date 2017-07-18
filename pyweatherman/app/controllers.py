@@ -64,7 +64,8 @@ def messaging():
         
         place.parse()
         latlon = place.latlon  
-        if not locality:
+        if place.locality:
+            # This will be a better name than what I typed
             locality = place.locality
     
         # Sanity check on the location goes here
