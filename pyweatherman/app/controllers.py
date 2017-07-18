@@ -38,7 +38,7 @@ def messaging():
 
     zip = locality = None
     if txtmsg:
-        if txtmsg.isdigit() && len(txtmsg)==5:
+        if txtmsg.isdigit() and len(txtmsg)==5:
             zip = txtmsg
         else:
             locality = txtmsg
