@@ -27,16 +27,22 @@ def messaging():
     
     # Does the message body have something in it?
     # It could be a zip code or a locality (address)
-    locality = None
+    txtmsg = None
     try:
         body = request.form["Body"].strip()
         if len(body) > 1:
             print("Body='%s'" % body)
-            locality = body
+            txtmsg = body
     except Exception as e:
-        print("Could not read body.", e)
+        print("Could not read message body.", e)
 
-    if not locality:
+    zip = locality = None
+    if txtmsg:
+        if txtmsg.isdigit() && len(txtmsg)==5:
+            zip = txtmsg
+        else:
+            locality = txtmsg
+    else:
         # try caller id zip and locality
         try:
             zip = request.form["FromZip"]
@@ -47,13 +53,15 @@ def messaging():
         except KeyError:
             locality = None
             pass
-        
+
     if not zip and not locality:
         # With no input, I cannot even guess where you are! Oh!
         msg = "Could not determine location, sorry. Weather information not available."
     else:
         place = geocode.geocode()
-        place.search(address=locality,postalcode=zip)
+
+        place.search(address=locality, postalcode=zip)
+        
         place.parse()
         latlon = place.latlon  
         if not locality:
