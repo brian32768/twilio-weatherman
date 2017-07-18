@@ -46,23 +46,56 @@ class geocode(object):
     def parse(self):
         """Parse json from Google and return a (lat,lon) tuple """
         #print(json.dumps(self.json,indent=4))
+
+        result_count = 0
+        self.status = ""
         try:
-            results = (self.json["results"])[0]
+            self.status = self.json["status"]
+            list_results = self.json["results"]
+            #print(list_results)
+
+            # Paris gives 8 results but Newport gives only 1
+            result_count = len(list_results)
+            #print("result_count",result_count)
+            
+            results = list_results[0]
+            
         except Exception as e:
             print("geocode.parse() failed with",e)
             return False
-        
+
+        if self.status != "OK":
+            return False
+
+        self.locality = self.short_state = self.long_state = ""
         address_components = results["address_components"]
-        self.locality = None
         for c in address_components:
             if "locality" in c["types"]:
                 self.locality = c["short_name"]
-                break
+            elif "administrative_area_level_1" in c["types"]:
+                self.short_state = c["short_name"]
+                self.long_state = c["long_name"]
+
         geometry = results["geometry"]
         location = geometry["location"]
         
         #print(location)
         self.latlon = location["lat"],location["lng"]
+
+        # Try to make return names that make sense
+
+        # Only tack on state if there is more than one result
+        self.short_place = self.locality
+        if result_count > 1 and self.short_state:
+            if self.short_place: self.short_place += " "
+            self.short_place += self.short_state
+
+        # Long place name always gets state tacked on
+        self.long_place = self.locality
+        if self.long_state:
+            if self.long_place: self.long_place += ", "
+            self.long_place += self.long_state
+
         return True
 
 # That's all!

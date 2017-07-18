@@ -11,21 +11,54 @@ if __name__ == "__main__":
     g = geocode()
     # comment out next line to skip google lookup and use sample json
     g.search(postalcode="94931")
-    g.parse()
-    latlon = g.latlon
-    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s' is %s" % (g.locality, g.latlon))
 
     g.search(address="Cotati")
-    g.parse()
-    latlon = g.latlon
-    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+
+    g.search(address="Asilomar")
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+
+    g.search(address="Newport")
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s'/'%s' is %s" % (g.short_place, g.long_place, g.latlon))
+
+    g.search(address="Newport, OR")
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s'/'%s' is %s" % (g.short_place, g.long_place, g.latlon))
+
+    g.search(address="Newport, OR")
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s'/'%s' is %s" % (g.short_place, g.long_place, g.latlon))
 
     g.search(address="Paris")
-    g.parse()
-    latlon = g.latlon
-    print("Latlon of '%s' is %s" % (g.locality, g.latlon))
+    if not g.parse():
+        print("Status ", g.status)
+    else:
+        latlon = g.latlon
+        print("Latlon of '%s'/'%s' is %s" % (g.short_place, g.long_place, g.latlon))
 
-    exit(0)
 
     # utils.helpers
     
