@@ -1,5 +1,6 @@
 #
 #  Look up a weather forecast at the National Weather Service
+#  API documentation: https://www.weather.gov/documentation/services-web-api
 #
 import os
 import geojson
@@ -36,28 +37,52 @@ class nws(object):
     def __init__(self, latlon):
         self.latlon = latlon
         self.updated = self.detailedForecast = None
+
+        # Find grid for this location
+ 
+        uri = pointuri % self.latlon
+        r = requests.get(uri)
+        if r.status_code != 200:
+            return None
+        j = geojson.loads(r.text)
+
+        # Save grid properties
+
+        self.gridId = j["properties"]["gridId"]
+        self.gridX  = j["properties"]["gridX"]
+        self.gridY  = j["properties"]["gridY"]
+        self.observationsStations_uri = j["properties"]["observationStations"]
+        self.forecast_uri = j["properties"]["forecast"] 
+
         return
 
     def getForecast(self):
         """ Return a human-readable forecast. """
-        r = requests.get(pointuri % self.latlon + "/forecast")
+
+        r = requests.get(self.forecast_uri)
+        if r.status_code != 200:
+            return None
         j = geojson.loads(r.text)
         properties = j["properties"]
         periods = properties["periods"]
+
         current = periods[0]
-        self.forecastUpdated = properties["updated"]
+        self.forecastUpdated  = properties["updated"]
         self.detailedForecast = current["detailedForecast"]
         return self.detailedForecast
     
     def getStations(self):
         """Return the list of stations for a given point, sorted by proximity. """
-        r = requests.get(pointuri % self.latlon + 'stations')
+
+        r = requests.get(self.observationsStations_uri)
+        if r.status_code != 200:
+            return None
         j = geojson.loads(r.text)
         #print(geojson.dumps(j,indent=4))
 
         stations = []
         for feature in j["features"]:
-            #print(feature)
+            #print("station name:", feature["properties"]["name"])
             properties = feature["properties"]
             stations.append((properties["stationIdentifier"], properties["name"]))
             pass
@@ -71,8 +96,10 @@ class nws(object):
         # we have to loop until we get at least the temperature.
         stations = self.getStations()
         for stationId,stationName in stations:
-            #print(station)
-            r = requests.get(baseuri + "stations/%s/observations/current" % stationId)
+            print(stationName)
+            r = requests.get(baseuri + "stations/%s/observations/latest" % stationId)
+            if r.status_code != 200: 
+                continue
             j = geojson.loads(r.text)
             #print(geojson.dumps(j,indent=4))
             temperature = None
@@ -97,11 +124,16 @@ class nws(object):
         return conditions
 
 if __name__ == "__main__":
-    latlon   = (38.352, -122.692) # Cotati
-    n = nws(latlon)
-    forecast = n.getForecast()
-    print(forecast)
-    conditions = n.getObservations()
-    print(n.stationName,conditions)
+    locations = [
+        (46.189, -123.821), # Astoria
+        (38.352, -122.692), # Cotati
+    ]
+    for latlon in locations:
+        n = nws(latlon)
+        conditions = n.getObservations()
+        print(n.stationName,conditions)
+
+        forecast = n.getForecast()
+        print(forecast)
 
 # That's all!

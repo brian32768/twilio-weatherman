@@ -3,6 +3,9 @@ Everyone wants to talk about the weather, including phone bots.
 
 This is a Twilio app that will respond to sms and voice requests.
 
+Looks like I wrote this before I learned about conda and docker. The WSGI code was written for Linux.
+I've started to update it for Conda and Telegram.
+
 ## pyweatherman
 
 The python flask version that I am currently writing.

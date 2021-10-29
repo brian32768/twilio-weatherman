@@ -5,7 +5,8 @@
 This is a Twilio app written in Python and Flask that will respond to
 sms and voice requests with information on weather conditions.
 
-As of right now (Jun 21 2017) it's running on +1 707-827-9200.
+As of right now (29 Oct 2021)
+it's not on a phone line.
 
 ## What it does
 
@@ -39,8 +40,7 @@ will fail and say a message to that effect.
 
 ## How to make it work
 
-This project is written and tested with Python 3, but it should work
-with Python 2.7 as well.
+This project is written and tested with Python 3.
 
 To pull a copy of the code from github,
 
@@ -54,7 +54,7 @@ Now you need to do a little prep work before you can run the app.
 ## 1. Use Conda to set up a virtual environment for Python
 
 ```bash
-conda create -n weatherman --file requirements.txt -c conda-forge
+conda create -n weatherman python flask geojson -c conda-forge
 conda activate weatherman
 pip install twilio PyOpenSSL
 ```
