@@ -1,7 +1,6 @@
 #
 #  Look up a weather forecast at the National Weather Service
 #
-from __future__ import print_function
 import os
 import geojson
 import requests

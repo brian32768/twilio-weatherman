@@ -44,20 +44,20 @@ with Python 2.7 as well.
 
 To pull a copy of the code from github,
 
-  ```bash
-  git clone github.com:brian32768/twilio-weatherman.git
-  cd twilio-weatherman/pyweatherman
-  ```
+```bash
+git clone github.com:brian32768/twilio-weatherman.git
+cd twilio-weatherman/pyweatherman
+```
 
 Now you need to do a little prep work before you can run the app.
 
-## 1. Set up a virtual environment for Python and install dependencies
+## 1. Use Conda to set up a virtual environment for Python
 
-  ```bash
-  virtualenv venv
-  source venv/bin/activate
-  pip install -r requirements.txt
-  ```
+```bash
+conda create -n weatherman --file requirements.txt -c conda-forge
+conda activate weatherman
+pip install twilio PyOpenSSL
+```
   
 ## 2. Set up Google API key
 
@@ -84,13 +84,13 @@ allow Twilio to access it. For testing running the flask service is
 fine, so I add this to my nginx server. You could use ngrok as an
 alternative if you don't have a web server.
 
-  ```bash
-  # This will make nginx act as a proxy for a flask instance, this is not
-  # for production! In real life you want to use uWSGI to run flask apps.
-  location /twilio/ {
-            proxy_pass http://127.0.0.1:5000/;
-  }
-  ```
+```bash
+# This will make nginx act as a proxy for a flask instance, this is not
+# for production! In real life you want to use uWSGI to run flask apps.
+location /twilio/ {
+          proxy_pass http://127.0.0.1:5000/;
+}
+ ```
   
 This will accept URLs such as https://bellman.wildsong.biz/twilio/status/
 and send them to http://127.0.0.1:5000/status/
@@ -111,9 +111,9 @@ work.
 If you are not still running in the virtual environment from the first step, 
 do this first: source venv/bin/activate
 
-  ```bash
-  python manage.py runserver
-  ```
+```bash
+python manage.py runserver
+```
 
 If your browser is running on the same machine as the service you
 should be able to hit http://127.0.0.1:5000/home/ and see a results
@@ -129,17 +129,17 @@ Someday I will set up Travis so that the code will see some automated testing.
 
 Simulate sending the request that Twilio sends to your server. Use something like this:
 
- ```bash
- curl "https://bellman.wildsong.biz/weather/messaging/" \
+```bash
+curl "https://bellman.wildsong.biz/weather/messaging/" \
    --data-urlencode "To=+17078279200" \
    --data-urlencode "From=+17078270003" --data-urlencode "FromZip=97333" --data-urlencode "FromCity=CORVALLIS" \
    --data-urlencode "Body=94931" 
- ```
+```
 
- ```bash
- curl "https://bellman.wildsong.biz/weather/voice/" \
+```bash
+curl "https://bellman.wildsong.biz/weather/voice/" \
    --data-urlencode "CallerCity=DUBLIN" --data-urlencode "CallerZip=94928" 
- ```
+```
 
 # Test results for various Twilio add-ons
 
